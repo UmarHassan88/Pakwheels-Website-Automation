@@ -159,6 +159,14 @@ public class Site_Automation {
         gridView.click();
     }
 
+    @Test(priority = 8)
+    public void openDetailedPage(){
+        List<WebElement> list = driver.findElements(By.cssSelector(".classified-listing"));
+        list.get(1).click();
+        //Assertion to pass the test case
+        softassert.assertEquals(driver.findElement(By.className("owner")).getText(), "Seller details");
+    }
+
 
     @AfterClass
     public void afterClassOperations() throws InterruptedException {
