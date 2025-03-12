@@ -12,7 +12,9 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -25,14 +27,13 @@ public class Site_Automation {
     SoftAssert softassert = new SoftAssert();
 
 
-
     @Test(priority = 1)
     public void SiteRedirection() {
         System.out.println("Opening the Pakwheels Website");
         driver.get("https://www.pakwheels.com/");
-        driver.manage().window().maximize();
+        //driver.manage().window().maximize();
         //Closing the Pop-Up
-        WebElement closePopup = wait.until(ExpectedConditions.elementToBeClickable(By.id("onesignal-slidedown-cancel-button")));
+        WebElement closePopup = driver.findElement(By.id("onesignal-slidedown-cancel-button"));
         closePopup.click();
         WebElement car = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[5]/section[2]/div[2]/div/ul/li[1]/input[1]")));
         car.sendKeys("BMW");
@@ -121,12 +122,20 @@ public class Site_Automation {
         System.out.println("Current URL: " + driver.getCurrentUrl());
         //WebElement usedBikes = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Find Used Bikes")));
         //usedBikes.click();
-        String x = "More Search Option";
+        String x = "More Search Options";
         String buttonText = "Searc";
 
         //Assertion for Search Options
-        softassert.assertEquals(driver.findElement(By.id("more_option")).getText(), x);
-
+        WebElement fetchText = driver.findElement(By.id("more_option"));
+        String a = fetchText.getText();
+        if(a.equals(x)){
+            Assert.assertTrue(true);
+        }
+        else{
+            Assert.assertTrue(false); // For Failed Test Case
+        }
+        //softassert.assertEquals(driver.findElement(By.id("more_option")).getText(), x);
+        //softassert.assertTrue(false);
         //Assertion for Button Text
         softassert.assertEquals(driver.findElement(By.xpath("/html/body/div[5]/section[2]/div[2]/div[2]/div[1]/div[3]/div[2]/button")).getText(), buttonText);;
 
@@ -160,19 +169,70 @@ public class Site_Automation {
     }
 
     @Test(priority = 8)
-    public void openDetailedPage(){
+    public void openDetailedBikeListing() {
         List<WebElement> list = driver.findElements(By.cssSelector(".classified-listing"));
         list.get(1).click();
         //Assertion to pass the test case
-        softassert.assertEquals(driver.findElement(By.className("owner")).getText(), "Seller details");
-    }
+        Set<String> currentAllWindowHandles = driver.getWindowHandles();
+        System.out.println("Current All Window Handles: " + currentAllWindowHandles);
+        String currentWindowHandle = driver.getWindowHandle();
+        for (String i : currentAllWindowHandles) {
+            if (!i.equals(currentWindowHandle)) {
+                driver.switchTo().window(i);
+            }
+        }
+        softassert.assertEquals(driver.findElement(By.xpath("/html/body/div[6]/div/div[2]/div[2]/div[1]/div/h2")).getText(), "Seller details");
 
+    }
+        @Test(priority = 9)
+        public void bikecontactFunctionality() {
+            String assertText = "Please enter a valid mobile number";
+
+            //Static Validation for Contact Number
+
+            WebElement contactNo = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[6]/div/div[2]/div[2]/div[3]/div[1]/div[2]/div[1]/button[1]")));
+            contactNo.click();
+            WebElement flagCode = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[7]/div/div/div[2]/form/div/div/div/div/div/div[2]")));
+            flagCode.click();
+            WebElement flagCodestatic = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[7]/div/div/div[2]/form/div/div/div/div/ul/li[1]")));
+            flagCodestatic.click();
+            WebElement contactNoInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("mobile-number-id")));
+            contactNoInput.sendKeys("3458676796");
+            WebElement continueMobile = wait.until(ExpectedConditions.elementToBeClickable(By.id("mobile-number-submit-btn")));
+            continueMobile.click();
+            softassert.assertEquals(driver.findElement(By.xpath("/html/body/div[7]/div/div/div[2]/small")).getText(), assertText);
+            driver.findElement(By.xpath("/html/body/div[7]/div/div/div[1]/button")).click();
+
+
+            for (int i = 0;i<3;i++) {
+            contactNo.click();
+            flagCode.click();
+            Random rand = new Random();
+            int randomValueflag = rand.nextInt(10);
+            System.out.println("Flag Count: " +randomValueflag);
+
+            String dynamicflagValue = "//*[@id=\"sign_in_pop_up\"]/div/div/div[2]/form/div/div/div/div/ul/li" + "[" + randomValueflag + "]";
+
+            WebElement flagCodeSelect = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(dynamicflagValue)));
+
+            flagCodeSelect.click();
+            contactNoInput.clear();
+
+            contactNoInput.sendKeys("345867679");
+
+
+                driver.findElement(By.xpath("/html/body/div[7]/div/div/div[1]/button")).click();
+
+        }
+            System.out.println(driver.findElement(By.cssSelector("#mobile-number-submit-btn")).getCssValue("color"));
+
+        }
 
     @AfterClass
     public void afterClassOperations() throws InterruptedException {
         softassert.assertAll("[]");
         //Thread.sleep(3000);
-        driver.close();
+        driver.quit();
 
     }
 }
