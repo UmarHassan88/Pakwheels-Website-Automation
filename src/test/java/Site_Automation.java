@@ -11,6 +11,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +98,7 @@ public class Site_Automation {
     }
 
     @Test(priority = 5)
-    public void InspectionReport() throws InterruptedException {
+    public void InspectionReport() throws InterruptedException, AWTException {
         ((JavascriptExecutor)driver).executeScript("window.scrollBy(0,700)");
         Thread.sleep(2000);
         WebElement viewSample = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("View Sample Inspection Report")));
@@ -111,8 +113,27 @@ public class Site_Automation {
                  driver.switchTo().window(i);
              }
         }
-        WebElement viewSampleAd = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[1]/div/div/div/a[3]")));
-        viewSampleAd.click();
+        //Print Summary
+        WebElement printadSummary = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[1]/div/div/div/a[2]")));
+        printadSummary.click();
+        Robot robot = new Robot();
+        robot.delay(2000); // Wait for the print dialog to open
+
+        // Press Enter to confirm the Save as PDF option
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
+        robot.delay(2000);
+
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
+
+        robot.keyPress(KeyEvent.VK_LEFT);
+        robot.keyRelease(KeyEvent.VK_LEFT);
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
+        driver.switchTo().window(currentWindow2);
+        driver.navigate().back();
+
     }
 
     @Test(priority = 6)
@@ -221,7 +242,7 @@ public class Site_Automation {
             contactNoInput.sendKeys("345867679");
 
 
-                driver.findElement(By.xpath("/html/body/div[7]/div/div/div[1]/button")).click();
+            driver.findElement(By.xpath("/html/body/div[7]/div/div/div[1]/button")).click();
 
         }
             System.out.println(driver.findElement(By.cssSelector("#mobile-number-submit-btn")).getCssValue("color"));
@@ -232,7 +253,7 @@ public class Site_Automation {
     public void afterClassOperations() throws InterruptedException {
         softassert.assertAll("[]");
         //Thread.sleep(3000);
-        driver.quit();
+        //driver.quit();
 
     }
 }
