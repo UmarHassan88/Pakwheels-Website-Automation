@@ -225,11 +225,11 @@ public class Site_Automation {
             driver.findElement(By.xpath("/html/body/div[7]/div/div/div[1]/button")).click();
 
 
-            for (int i = 0;i<3;i++) {
+            for (int i = 0;i<2;i++) {
             contactNo.click();
             flagCode.click();
             Random rand = new Random();
-            int randomValueflag = rand.nextInt(10);
+            int randomValueflag = rand.nextInt(9) + 1;
             System.out.println("Flag Count: " +randomValueflag);
 
             String dynamicflagValue = "//*[@id=\"sign_in_pop_up\"]/div/div/div[2]/form/div/div/div/div/ul/li" + "[" + randomValueflag + "]";
@@ -247,6 +247,51 @@ public class Site_Automation {
         }
             System.out.println(driver.findElement(By.cssSelector("#mobile-number-submit-btn")).getCssValue("color"));
 
+        }
+
+        @Test(priority = 10)
+        public void carInsurance() throws InterruptedException {
+            WebElement More = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("More")));
+            More.click();
+            WebElement CarInsurance = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[1]/div[2]/ul/li[8]/ul/li/div/ul/li[3]/a")));
+            CarInsurance.click();
+
+            for(int i = 0; i<5;i++) {
+                //Fields filling
+                WebElement carmakeModel = wait.until(ExpectedConditions.elementToBeClickable(By.name("car_selector")));
+                WebElement carPrice = wait.until(ExpectedConditions.elementToBeClickable(By.name("car_value")));
+                carmakeModel.click();
+
+                //Assertion to check if the pop-up is opened!
+                softassert.assertTrue(driver.findElement(By.xpath("/html/body/div[5]/section[2]/div/div[2]/div/div/div[1]/div[1]/div[1]")).isDisplayed());
+
+                //Elements for Model Year, Make, Model and Version
+                WebElement modelYear = wait.until(ExpectedConditions.elementToBeClickable(By.id("model_year_2024")));
+                modelYear.click();
+
+                softassert.assertTrue(driver.findElement(By.xpath("/html/body/div[5]/section[2]/div/div[2]/div/div/div[1]/div[2]/div[1]")).isEnabled());
+
+
+                WebElement make = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[5]/section[2]/div/div[2]/div/div/div[1]/div[2]/div[2]/ul/li[4]")));
+                make.click();
+                WebElement model = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"model_2\"]")));
+                model.click();
+                Random random = new Random();
+
+                String[] versionIDs = {"version_3508", "version_3509", "version_3510"};
+                String randomVersionid = versionIDs[random.nextInt(versionIDs.length)];
+
+                WebElement version = wait.until(ExpectedConditions.elementToBeClickable(By.id(randomVersionid)));
+                version.click();
+                int[] price = {100000, 200000, 400000, 1500000, 5000000};
+                int randomPrice = price[random.nextInt(price.length)];
+                carPrice.sendKeys("200000");
+
+                //carPrice.sendKeys(Integer.toString(randomPrice));
+                WebElement doneButton = wait.until(ExpectedConditions.elementToBeClickable(By.name("submit_btn")));
+                doneButton.click();
+                Thread.sleep(2000);
+            }
         }
 
     @AfterClass
